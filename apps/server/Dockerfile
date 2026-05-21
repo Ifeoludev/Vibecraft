@@ -25,6 +25,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/types ./packages/types
 COPY --from=builder /app/apps/server/dist ./dist
 COPY --from=builder /app/apps/server/prisma ./prisma
+COPY --from=builder /app/apps/server/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/apps/server/package.json ./package.json
 
 EXPOSE 3001
