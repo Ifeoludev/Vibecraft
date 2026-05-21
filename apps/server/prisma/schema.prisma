@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Platform {
+  YOUTUBE
+}
+
+model User {
+  id              String         @id @default(cuid())
+  email           String         @unique
+  displayName     String
+  avatarUrl       String?
+  defaultPlatform Platform?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  oauthAccounts   OAuthAccount[]
+  playlists       Playlist[]
+}
+
+model OAuthAccount {
+  id             String   @id @default(cuid())
+  userId         String
+  platform       Platform
+  accessToken    String
+  refreshToken   String
+  expiresAt      DateTime
+  platformUserId String
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform])
+}
+
+model Playlist {
+  id                 String   @id @default(cuid())
+  userId             String
+  vibeDescription    String
+  songs              Json
+  platform           Platform
+  platformPlaylistId String?
+  platformUrl        String?
+  createdAt          DateTime @default(now())
+
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}

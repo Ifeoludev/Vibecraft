@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vibecraft
+      POSTGRES_PASSWORD: vibecraft
+      POSTGRES_DB: vibecraft
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - apps/server/.env
+    environment:
+      # Overrides DATABASE_URL in .env — uses the postgres service, not localhost
+      DATABASE_URL: postgresql://vibecraft:vibecraft@postgres:5432/vibecraft
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
