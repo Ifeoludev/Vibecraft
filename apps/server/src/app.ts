@@ -16,7 +16,7 @@ import userRouter from './routes/user.routes';
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_URL?.trim(), credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
