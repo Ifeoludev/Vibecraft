@@ -15,12 +15,16 @@ passport.deserializeUser((id: string, done) => {
   );
 });
 
+const googleCallbackURL = `${process.env.SERVER_URL?.trim()}/api/auth/google/callback`;
+console.log('[passport] SERVER_URL:', JSON.stringify(process.env.SERVER_URL));
+console.log('[passport] callbackURL:', JSON.stringify(googleCallbackURL));
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: `${process.env.SERVER_URL?.trim()}/api/auth/google/callback`,
+      callbackURL: googleCallbackURL,
     },
     // Google's login-scope tokens are ignored; we only need the profile to identify the user
     async (_accessToken, _refreshToken, profile, done) => {
