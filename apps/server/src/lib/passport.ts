@@ -18,6 +18,8 @@ passport.deserializeUser((id: string, done) => {
 const googleCallbackURL = `${process.env.SERVER_URL?.trim()}/api/auth/google/callback`;
 console.log('[passport] SERVER_URL:', JSON.stringify(process.env.SERVER_URL));
 console.log('[passport] callbackURL:', JSON.stringify(googleCallbackURL));
+console.log('[passport] GOOGLE_CLIENT_ID ends with:', process.env.GOOGLE_CLIENT_ID?.slice(-20));
+console.log('[passport] GOOGLE_CLIENT_SECRET ends with:', process.env.GOOGLE_CLIENT_SECRET?.slice(-5));
 
 passport.use(
   new GoogleStrategy(
