@@ -20,7 +20,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: `${process.env.SERVER_URL}/api/auth/google/callback`,
+      callbackURL: `${process.env.SERVER_URL?.trim()}/api/auth/google/callback`,
     },
     // Google's login-scope tokens are ignored; we only need the profile to identify the user
     async (_accessToken, _refreshToken, profile, done) => {
