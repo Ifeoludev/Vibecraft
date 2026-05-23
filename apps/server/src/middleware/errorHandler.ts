@@ -34,7 +34,7 @@ export function errorHandler(
     return;
   }
 
-  logger.error({ message: err.message, stack: err.stack });
+  logger.error({ message: err.message, stack: err.stack, code: (err as NodeJS.ErrnoException & { code?: string }).code });
 
   res.status(500).json({
     success: false,
