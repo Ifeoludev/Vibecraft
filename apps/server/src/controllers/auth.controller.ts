@@ -21,7 +21,7 @@ export const authController = {
       if (!req.user) throw new UnauthorizedError();
       const token = authService.issueJwt(req.user.id);
       res.cookie('token', token, COOKIE_OPTIONS);
-      res.redirect(`${process.env.CLIENT_URL}/home`);
+      res.redirect(`${process.env.CLIENT_URL?.trim()}/home`);
     } catch (err) {
       next(err);
     }
