@@ -33,7 +33,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: 'https://vibecraft-cl84.onrender.com/api/auth/google/callback',
+      callbackURL: `${process.env.SERVER_URL}/api/auth/google/callback`,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       store: noopStateStore as any,
     },

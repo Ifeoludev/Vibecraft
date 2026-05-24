@@ -6,14 +6,25 @@ import { requireAuth } from '../middleware/requireAuth';
 const router = Router();
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', (req, _res, next) => {
-  console.log('[oauth-callback] raw code:', JSON.stringify(req.query.code));
-  console.log('[oauth-callback] raw state:', JSON.stringify(req.query.state));
-  next();
-}, passport.authenticate('google', {
-  session: false,
-  failureRedirect: `${process.env.CLIENT_URL?.trim()}/`,
-}), authController.googleCallback);
+router.get('/google/callback', (req, res, next) => {
+  console.log('[oauth-callback] code prefix:', req.query.code?.toString().slice(0, 12));
+  console.log('[oauth-callback] state:', JSON.stringify(req.query.state));
+  passport.authenticate('google', { session: false }, (err: Error | null, user: Express.User | false) => {
+    if (err) {
+      console.error('[oauth-callback] passport error:', err.message);
+      // Log the raw Google error body when available
+      const oauthErr = (err as Error & { oauthError?: unknown }).oauthError;
+      if (oauthErr) console.error('[oauth-callback] google error body:', JSON.stringify(oauthErr));
+      return res.redirect(`${process.env.CLIENT_URL?.trim()}/`);
+    }
+    if (!user) {
+      console.warn('[oauth-callback] no user returned, redirecting');
+      return res.redirect(`${process.env.CLIENT_URL?.trim()}/`);
+    }
+    req.user = user;
+    next();
+  })(req, res, next);
+}, authController.googleCallback);
 
 router.get('/me', requireAuth, authController.me);
 router.post('/logout', authController.logout);
