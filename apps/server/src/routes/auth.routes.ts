@@ -6,7 +6,7 @@ import { requireAuth } from '../middleware/requireAuth';
 const router = Router();
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', (req, res, next) => {
+router.get('/google/callback', (req, _res, next) => {
   console.log('[oauth-callback] raw code:', JSON.stringify(req.query.code));
   console.log('[oauth-callback] raw state:', JSON.stringify(req.query.state));
   next();

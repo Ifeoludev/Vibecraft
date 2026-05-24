@@ -7,7 +7,7 @@ declare global {
       email: string;
       displayName: string;
       avatarUrl: string | null;
-      defaultPlatform: 'YOUTUBE' | null;
+      defaultPlatform: import('../generated/prisma/enums').Platform | null;
       createdAt: Date;
       updatedAt: Date;
     }
