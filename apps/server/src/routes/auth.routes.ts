@@ -6,14 +6,14 @@ import { requireAuth } from '../middleware/requireAuth';
 const router = Router();
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get(
-  '/google/callback',
-  passport.authenticate('google', {
-    session: false, // JWT cookie is already set in googleCallback; no need to persist user in session
-    failureRedirect: `${process.env.CLIENT_URL}/`,
-  }),
-  authController.googleCallback
-);
+router.get('/google/callback', (req, res, next) => {
+  console.log('[oauth-callback] raw code:', JSON.stringify(req.query.code));
+  console.log('[oauth-callback] raw state:', JSON.stringify(req.query.state));
+  next();
+}, passport.authenticate('google', {
+  session: false,
+  failureRedirect: `${process.env.CLIENT_URL?.trim()}/`,
+}), authController.googleCallback);
 
 router.get('/me', requireAuth, authController.me);
 router.post('/logout', authController.logout);
