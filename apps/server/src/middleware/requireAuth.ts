@@ -5,6 +5,7 @@ import { UnauthorizedError } from '../errors';
 
 export async function requireAuth(req: Request, _res: Response, next: NextFunction) {
   try {
+    console.log('[requireAuth] cookie keys:', Object.keys(req.cookies || {}), 'origin:', req.headers.origin);
     const token = req.cookies?.token as string | undefined;
     if (!token) throw new UnauthorizedError();
 
