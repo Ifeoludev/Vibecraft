@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import axios from 'axios';
 import Header from '../components/Header';
 import MusicParticles from '../components/MusicParticles';
+import Spinner from '../components/Spinner';
 import { YouTubeIcon } from '../components/PlatformIcons';
+import { extractErrorMessage } from '../lib/errorUtils';
 import api from '../lib/api';
 
 interface Song {
@@ -65,11 +66,7 @@ export default function PlaylistPage() {
       window.open(data.data.platformUrl, '_blank', 'noopener,noreferrer');
     },
     onError: (err: Error) => {
-      if (axios.isAxiosError(err)) {
-        setExportError(err.response?.data?.message ?? 'Export failed. Try again.');
-      } else {
-        setExportError('Export failed. Try again.');
-      }
+      setExportError(extractErrorMessage(err, 'Export failed. Try again.'));
     },
   });
 
@@ -266,15 +263,6 @@ function ExportForm({
   );
 }
 
-function Spinner({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
-  const cls = size === 'lg' ? 'h-8 w-8 text-violet-500' : 'h-4 w-4';
-  return (
-    <svg className={`animate-spin ${cls}`} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-    </svg>
-  );
-}
 
 function ExternalIcon() {
   return (
