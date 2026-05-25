@@ -43,7 +43,7 @@ model Playlist {
   userId             String
   vibeDescription    String
   songs              Json
-  platform           Platform
+  platform           Platform?
   platformPlaylistId String?
   platformUrl        String?
   createdAt          DateTime @default(now())

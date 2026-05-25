@@ -7,14 +7,12 @@ export const playlistRepository = {
     userId: string;
     vibeDescription: string;
     songs: Song[];
-    platform: Platform;
   }) {
     return prisma.playlist.create({
       data: {
         userId: data.userId,
         vibeDescription: data.vibeDescription,
         songs: data.songs as object[],
-        platform: data.platform,
       },
     });
   },

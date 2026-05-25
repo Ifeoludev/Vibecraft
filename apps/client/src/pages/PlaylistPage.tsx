@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -36,6 +36,7 @@ const cardVariant = {
 
 export default function PlaylistPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [playlistName, setPlaylistName] = useState('');
   const [exportError, setExportError] = useState<string | null>(null);
@@ -66,7 +67,12 @@ export default function PlaylistPage() {
     },
     onError: (err: Error) => {
       if (axios.isAxiosError(err)) {
-        setExportError(err.response?.data?.message ?? 'Export failed. Try again.');
+        const msg = err.response?.data?.message ?? 'Export failed. Try again.';
+        if (err.response?.status === 401 && msg.toLowerCase().includes('connect')) {
+          navigate('/profile');
+          return;
+        }
+        setExportError(msg);
       } else {
         setExportError('Export failed. Try again.');
       }
