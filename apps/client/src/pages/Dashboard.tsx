@@ -3,13 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 import api from '../lib/api';
-
-interface UserProfile {
-  displayName: string;
-  avatarUrl: string | null;
-  dailyLimit: number;
-}
 
 interface PlaylistSummary {
   id: string;
@@ -49,13 +44,7 @@ export default function Dashboard() {
   // Stable index chosen on mount so the greeting rotates each visit but doesn't flicker mid-session
   const [greetIdx] = useState(() => Math.floor(Math.random() * 4));
 
-  const { data: user, isError } = useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const res = await api.get('/api/auth/me');
-      return res.data.data as UserProfile;
-    },
-  });
+  const { data: user, isError } = useCurrentUser();
 
   // Redirect to landing if the session is gone (token expired, user visits /home directly)
   useEffect(() => {

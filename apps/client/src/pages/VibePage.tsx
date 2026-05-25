@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
 import Header from '../components/Header';
 import MusicParticles from '../components/MusicParticles';
+import Spinner from '../components/Spinner';
+import { extractErrorMessage } from '../lib/errorUtils';
 import api from '../lib/api';
 
 const MAX_CHARS = 300;
@@ -38,11 +39,7 @@ export default function VibePage() {
     },
     // Use the server's error message when available
     onError: (err: Error) => {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message ?? 'Something went wrong. Try again.');
-      } else {
-        setError('Something went wrong. Try again.');
-      }
+      setError(extractErrorMessage(err, 'Something went wrong. Try again.'));
     },
   });
 
@@ -134,11 +131,3 @@ export default function VibePage() {
   );
 }
 
-function Spinner() {
-  return (
-    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-    </svg>
-  );
-}

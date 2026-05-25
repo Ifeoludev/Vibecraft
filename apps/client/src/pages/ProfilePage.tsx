@@ -1,20 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import axios from 'axios';
 import Header from '../components/Header';
+import Spinner from '../components/Spinner';
 import { YouTubeIcon } from '../components/PlatformIcons';
+import { extractErrorMessage } from '../lib/errorUtils';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 import api from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-
-interface UserProfile {
-  id: string;
-  email: string;
-  displayName: string;
-  avatarUrl: string | null;
-  defaultPlatform: 'YOUTUBE' | null;
-}
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -35,13 +29,7 @@ export default function ProfilePage() {
     }
   }, []);
 
-  const { data: user, isLoading, isError } = useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const res = await api.get('/api/auth/me');
-      return res.data.data as UserProfile;
-    },
-  });
+  const { data: user, isLoading, isError } = useCurrentUser();
 
   const disconnectMutation = useMutation({
     mutationFn: async (platform: 'YOUTUBE') => {
@@ -52,11 +40,7 @@ export default function ProfilePage() {
       queryClient.invalidateQueries({ queryKey: ['me'] });
     },
     onError: (err) => {
-      if (axios.isAxiosError(err)) {
-        setDisconnectError(err.response?.data?.message ?? 'Failed to disconnect. Try again.');
-      } else {
-        setDisconnectError('Failed to disconnect. Try again.');
-      }
+      setDisconnectError(extractErrorMessage(err, 'Failed to disconnect. Try again.'));
     },
   });
 
@@ -65,17 +49,12 @@ export default function ProfilePage() {
       await api.delete('/api/user');
     },
     onSuccess: () => {
-      // Wipe local auth state and all cached queries before redirecting
       setUser(null);
       queryClient.clear();
       navigate('/');
     },
     onError: (err) => {
-      if (axios.isAxiosError(err)) {
-        setDeleteError(err.response?.data?.message ?? 'Failed to delete account. Try again.');
-      } else {
-        setDeleteError('Failed to delete account. Try again.');
-      }
+      setDeleteError(extractErrorMessage(err, 'Failed to delete account. Try again.'));
       setShowDeleteConfirm(false);
     },
   });
@@ -269,12 +248,3 @@ function PersonIcon() {
   );
 }
 
-function Spinner({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
-  const cls = size === 'lg' ? 'h-8 w-8 text-violet-500' : 'h-4 w-4';
-  return (
-    <svg className={`animate-spin ${cls}`} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-    </svg>
-  );
-}

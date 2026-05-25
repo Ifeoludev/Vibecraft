@@ -6,12 +6,7 @@ import { oauthRepository } from '../repositories/oauth.repository';
 import { userRepository } from '../repositories/user.repository';
 import { UnauthorizedError } from '../errors';
 import { fetchWithTimeout } from '../lib/fetch';
-
-interface GoogleTokenResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-}
+import { exchangeYoutubeCode } from '../lib/googleOAuth';
 
 interface YoutubeChannelResponse {
   items: { id: string }[];
@@ -42,29 +37,14 @@ export const authService = {
     const payload = verifyJwt<{ userId: string; nonce: string }>(state);
     if (!payload) throw new UnauthorizedError('Invalid OAuth state');
 
-    const body = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: `${process.env.SERVER_URL}/api/auth/youtube/callback`,
-      client_id: process.env.YOUTUBE_CLIENT_ID!,
-      client_secret: process.env.YOUTUBE_CLIENT_SECRET!,
-    });
-
-    const tokenRes = await fetchWithTimeout('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-    });
-
-    if (!tokenRes.ok) throw new UnauthorizedError('YouTube token exchange failed');
-    const tokens = (await tokenRes.json()) as GoogleTokenResponse;
+    const tokens = await exchangeYoutubeCode(code);
 
     // Fetch channel ID for platformUserId — non-fatal if quota is exhausted or unavailable
     // platformUserId is stored for reference but not required for playlist creation
     let platformUserId = '';
     const channelRes = await fetchWithTimeout(
       'https://www.googleapis.com/youtube/v3/channels?part=id&mine=true',
-      { headers: { Authorization: `Bearer ${tokens.access_token}` } }
+      { headers: { Authorization: `Bearer ${tokens.accessToken}` } }
     );
     if (channelRes.ok) {
       const channel = (await channelRes.json()) as YoutubeChannelResponse;
@@ -74,9 +54,9 @@ export const authService = {
     await oauthRepository.upsert({
       userId: payload.userId,
       platform: Platform.YOUTUBE,
-      accessToken: encrypt(tokens.access_token),
-      refreshToken: encrypt(tokens.refresh_token),
-      expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
+      accessToken: encrypt(tokens.accessToken),
+      refreshToken: encrypt(tokens.refreshToken!),
+      expiresAt: tokens.expiresAt,
       platformUserId,
     });
     await userRepository.updateDefaultPlatform(payload.userId, 'YOUTUBE');

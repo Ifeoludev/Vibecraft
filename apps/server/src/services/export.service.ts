@@ -3,36 +3,9 @@ import { Song } from '@vibecraft/types';
 import { decrypt, encrypt } from '../lib/crypto';
 import { oauthRepository } from '../repositories/oauth.repository';
 import { playlistRepository } from '../repositories/playlist.repository';
-import { ExternalAPIError, NotFoundError, UnauthorizedError, ValidationError } from '../errors';
+import { ExternalAPIError, NotFoundError, ValidationError } from '../errors';
 import { fetchWithTimeout } from '../lib/fetch';
-
-//Token refresh helpers
-
-interface RefreshedTokens {
-  accessToken: string;
-  refreshToken?: string; // only present when Google rotates it
-  expiresAt: Date;
-}
-
-async function refreshYoutubeToken(refreshToken: string): Promise<RefreshedTokens> {
-  const res = await fetchWithTimeout('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: process.env.YOUTUBE_CLIENT_ID!,
-      client_secret: process.env.YOUTUBE_CLIENT_SECRET!,
-    }),
-  });
-  if (!res.ok) throw new UnauthorizedError('YouTube token refresh failed — reconnect YouTube');
-  const data = (await res.json()) as { access_token: string; expires_in: number; refresh_token?: string };
-  return {
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
-    expiresAt: new Date(Date.now() + data.expires_in * 1000),
-  };
-}
+import { refreshYoutubeToken } from '../lib/googleOAuth';
 
 // Returns a valid (possibly freshly-refreshed) access token, updating the DB if needed
 async function getValidAccessToken(userId: string, platform: Platform): Promise<string> {
@@ -57,6 +30,7 @@ async function getValidAccessToken(userId: string, platform: Platform): Promise<
     userId,
     platform,
     accessToken: encrypt(refreshed.accessToken),
+    // Google only rotates the refresh token occasionally — keep the old one if not returned
     refreshToken: refreshed.refreshToken ? encrypt(refreshed.refreshToken) : account.refreshToken,
     expiresAt: refreshed.expiresAt,
     platformUserId: account.platformUserId,
