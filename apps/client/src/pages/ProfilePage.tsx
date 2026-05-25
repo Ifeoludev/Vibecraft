@@ -8,8 +8,6 @@ import { YouTubeIcon } from '../components/PlatformIcons';
 import api from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
-
 interface UserProfile {
   id: string;
   email: string;
@@ -182,7 +180,7 @@ export default function ProfilePage() {
                 No platform connected. Connect YouTube Music to export playlists.
               </p>
               <a
-                href={`${API_URL}/api/auth/youtube`}
+                href="/api/auth/youtube"
                 className="inline-flex items-center gap-2 py-2.5 px-5 rounded-xl bg-[#ff0000] hover:bg-[#cc0000] active:scale-[0.98] text-white font-semibold text-sm transition-all duration-150"
               >
                 <YouTubeIcon className="h-4 w-4" />
