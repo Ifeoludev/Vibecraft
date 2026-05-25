@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -36,7 +36,6 @@ const cardVariant = {
 
 export default function PlaylistPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [playlistName, setPlaylistName] = useState('');
   const [exportError, setExportError] = useState<string | null>(null);
@@ -67,12 +66,7 @@ export default function PlaylistPage() {
     },
     onError: (err: Error) => {
       if (axios.isAxiosError(err)) {
-        const msg = err.response?.data?.message ?? 'Export failed. Try again.';
-        if (err.response?.status === 401 && msg.toLowerCase().includes('connect')) {
-          navigate('/profile');
-          return;
-        }
-        setExportError(msg);
+        setExportError(err.response?.data?.message ?? 'Export failed. Try again.');
       } else {
         setExportError('Export failed. Try again.');
       }
@@ -238,7 +232,16 @@ function ExportForm({
         className="w-full bg-[#13102b] text-slate-100 placeholder-slate-600 rounded-xl px-4 py-3 text-sm outline-none border border-white/5 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20 transition-all duration-200 mb-4"
       />
 
-      {exportError && <p className="mb-4 text-sm text-red-400">{exportError}</p>}
+      {exportError && (
+        <p className="mb-4 text-sm text-red-400">
+          {exportError}{' '}
+          {exportError.toLowerCase().includes('connect') && (
+            <Link to="/profile" className="underline hover:text-red-300">
+              Go to Profile →
+            </Link>
+          )}
+        </p>
+      )}
 
       <div className="flex gap-3">
         <button

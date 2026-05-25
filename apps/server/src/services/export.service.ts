@@ -3,7 +3,7 @@ import { Song } from '@vibecraft/types';
 import { decrypt, encrypt } from '../lib/crypto';
 import { oauthRepository } from '../repositories/oauth.repository';
 import { playlistRepository } from '../repositories/playlist.repository';
-import { ExternalAPIError, NotFoundError, UnauthorizedError } from '../errors';
+import { ExternalAPIError, NotFoundError, UnauthorizedError, ValidationError } from '../errors';
 import { fetchWithTimeout } from '../lib/fetch';
 
 //Token refresh helpers
@@ -38,7 +38,7 @@ async function refreshYoutubeToken(refreshToken: string): Promise<RefreshedToken
 async function getValidAccessToken(userId: string, platform: Platform): Promise<string> {
   const account = await oauthRepository.findByUserAndPlatform(userId, platform);
   if (!account) {
-    throw new UnauthorizedError(
+    throw new ValidationError(
       `No ${platform} account connected. Connect it from your profile first.`
     );
   }
@@ -137,7 +137,7 @@ export const exportService = {
 
     const account = await oauthRepository.findByUserAndPlatform(userId, platform);
     if (!account) {
-      throw new UnauthorizedError(
+      throw new ValidationError(
         `No ${platform} account connected. Connect it from your profile first.`
       );
     }
