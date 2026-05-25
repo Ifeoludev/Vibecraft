@@ -48,7 +48,7 @@ export const authService = {
     );
     if (channelRes.ok) {
       const channel = (await channelRes.json()) as YoutubeChannelResponse;
-      platformUserId = channel.items[0]?.id ?? '';
+      platformUserId = channel.items?.[0]?.id ?? '';
     }
 
     await oauthRepository.upsert({
