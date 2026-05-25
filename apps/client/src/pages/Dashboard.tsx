@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import { useCurrentUser } from '../hooks/useCurrentUser';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../lib/api';
 
 interface PlaylistSummary {
@@ -39,6 +40,7 @@ function isToday(iso: string): boolean {
 }
 
 export default function Dashboard() {
+  usePageTitle('Home');
   const navigate = useNavigate();
 
   // Stable index chosen on mount so the greeting rotates each visit but doesn't flicker mid-session

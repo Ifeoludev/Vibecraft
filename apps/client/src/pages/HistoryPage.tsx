@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Spinner from '../components/Spinner';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../lib/api';
 
 interface PlaylistSummary {
@@ -34,6 +35,7 @@ function formatDate(iso: string): string {
 }
 
 export default function HistoryPage() {
+  usePageTitle('History');
   // staleTime: 0 so the list is always fresh — avoids the new playlist being missing
   // after the user generates one and immediately visits this page
   const {
