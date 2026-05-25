@@ -14,7 +14,11 @@ async function postToTokenEndpoint(params: URLSearchParams): Promise<GoogleToken
     body: params,
   });
 
-  if (!res.ok) throw new UnauthorizedError('YouTube token request failed');
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    console.error('Google token exchange failed', { status: res.status, body });
+    throw new UnauthorizedError('YouTube token request failed');
+  }
 
   const data = (await res.json()) as {
     access_token: string;
