@@ -57,6 +57,4 @@ passport.use(
   )
 );
 
-console.log('[passport] callbackURL:', `${process.env.SERVER_URL}/api/auth/google/callback`);
-
 export default passport;
