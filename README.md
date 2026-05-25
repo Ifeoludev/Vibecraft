@@ -2,7 +2,7 @@
 
 Describe a mood or feeling. Vibecraft uses AI to generate a matching playlist and exports it directly to your YouTube Music library.
 
-**Live demo**: [vibecraft.vercel.app](https://vibecraft.vercel.app)
+**Live demo**: [vibecraft.vercel.app](https://vibecraft-snowy.vercel.app/)
 
 ---
 
