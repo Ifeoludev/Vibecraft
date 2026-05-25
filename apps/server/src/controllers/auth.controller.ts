@@ -46,7 +46,6 @@ export const authController = {
 
   disconnectPlatform: asyncHandler(async (req: Request, res: Response) => {
     const platform = req.params.platform?.toUpperCase() as Platform;
-    console.log('[disconnect] raw param:', JSON.stringify(req.params.platform), '| uppercased:', JSON.stringify(platform), '| Platform.YOUTUBE:', JSON.stringify(Platform.YOUTUBE));
     if (platform !== Platform.YOUTUBE) {
       throw new ValidationError('Invalid platform');
     }
