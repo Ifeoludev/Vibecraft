@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import MusicParticles from '../components/MusicParticles';
 import Spinner from '../components/Spinner';
 import { extractErrorMessage } from '../lib/errorUtils';
+import { usePageTitle } from '../hooks/usePageTitle';
 import api from '../lib/api';
 
 const MAX_CHARS = 300;
@@ -24,6 +25,7 @@ const LOADING_MESSAGES = [
 ];
 
 export default function VibePage() {
+  usePageTitle('Generate');
   const [vibe, setVibe] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [msgIdx, setMsgIdx] = useState(0);

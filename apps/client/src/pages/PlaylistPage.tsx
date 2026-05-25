@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import MusicParticles from '../components/MusicParticles';
 import Spinner from '../components/Spinner';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { YouTubeIcon } from '../components/PlatformIcons';
 import { extractErrorMessage } from '../lib/errorUtils';
 import api from '../lib/api';
@@ -36,6 +37,7 @@ const cardVariant = {
 
 
 export default function PlaylistPage() {
+  usePageTitle('Playlist');
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [playlistName, setPlaylistName] = useState('');

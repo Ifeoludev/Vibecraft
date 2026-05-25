@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Spinner from '../components/Spinner';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { YouTubeIcon } from '../components/PlatformIcons';
 import { extractErrorMessage } from '../lib/errorUtils';
 import { useCurrentUser } from '../hooks/useCurrentUser';
@@ -11,6 +12,7 @@ import api from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 
 export default function ProfilePage() {
+  usePageTitle('Profile');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const setUser = useAuthStore((s) => s.setUser);
