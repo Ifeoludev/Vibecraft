@@ -23,16 +23,9 @@ export const playlistController = {
         throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid request body');
       }
 
-      // Platform comes from the user's connected account, not the request body
-      const platform = req.user!.defaultPlatform;
-      if (!platform) {
-        throw new ValidationError('Connect a music platform from your Profile before generating a playlist.');
-      }
-
       const playlist = await playlistService.generate(
         req.user!.id,
         parsed.data.vibeDescription,
-        platform
       );
 
       res.status(201).json({ success: true, data: playlist });

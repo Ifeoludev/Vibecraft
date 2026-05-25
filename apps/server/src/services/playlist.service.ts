@@ -1,4 +1,3 @@
-import { Platform } from '../generated/prisma/enums';
 import { geminiService } from './gemini.service';
 import { musicApiService } from './musicApi.service';
 import { playlistRepository } from '../repositories/playlist.repository';
@@ -7,7 +6,7 @@ import { RateLimitError } from '../errors';
 export const DAILY_GENERATION_LIMIT = 4;
 
 export const playlistService = {
-  async generate(userId: string, vibeDescription: string, platform: Platform) {
+  async generate(userId: string, vibeDescription: string) {
     const todayCount = await playlistRepository.countTodayByUser(userId);
     if (todayCount >= DAILY_GENERATION_LIMIT) {
       throw new RateLimitError(
@@ -19,7 +18,7 @@ export const playlistService = {
     const suggestions = await geminiService.getSuggestions(vibeDescription);
     const songs = await musicApiService.validateSuggestions(suggestions);
 
-    return playlistRepository.create({ userId, vibeDescription, songs, platform });
+    return playlistRepository.create({ userId, vibeDescription, songs });
   },
 
   async getById(id: string, userId: string) {
