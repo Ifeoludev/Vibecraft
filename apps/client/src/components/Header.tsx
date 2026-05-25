@@ -24,7 +24,7 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0d0b1e]/80 backdrop-blur-sm border-b border-white/5">
       <div className="flex items-center justify-between px-6 py-4">
         <Link to="/home" className="flex items-center gap-1 select-none" onClick={close}>
-          <img src="/Vibecraft logo.png" alt="Vibecraft" className="h-10 object-contain" />
+          <img src="/Vibecraft-logo-no-background-newest.png" alt="Vibecraft" className="h-6 w-auto object-contain" />
           <span className="text-lg font-bold text-slate-100 tracking-tight">Vibecraft</span>
         </Link>
 
