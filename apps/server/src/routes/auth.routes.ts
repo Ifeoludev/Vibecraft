@@ -7,8 +7,6 @@ const router = Router();
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback', (req, res, next) => {
-  console.log('[oauth-callback] code prefix:', req.query.code?.toString().slice(0, 12));
-  console.log('[oauth-callback] state:', JSON.stringify(req.query.state));
   passport.authenticate('google', { session: false }, (err: Error | null, user: Express.User | false) => {
     if (err) {
       console.error('[oauth-callback] passport error:', err.message);
